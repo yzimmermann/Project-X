@@ -20,8 +20,9 @@ recordButton.addEventListener('click', () => {
                     .then(response => response.text())
                     .then(result => {
                         output.innerHTML = `${result}`;
-                    });
+                    });      
                 recorder.finishRecording();
+                stream.getTracks()[0].stop();
                 stopButton.disabled = true;
                 recordButton.disabled = false;
             };
