@@ -9,16 +9,7 @@ recordButton.addEventListener('click', () => {
         .then(stream => {
             const audioContext = new AudioContext();
             const source = audioContext.createMediaStreamSource(stream);
-            recorder = new WebAudioRecorder(source, {
-                workerDir: '/static/js/',
-                encoding: 'wav',
-                onEncoderLoading: function(recorder, encoding) {
-                    console.log("Loading " + encoding + " encoder...");
-                },
-                onEncoderLoaded: function(recorder, encoding) {
-                    console.log(encoding + " encoder loaded.");
-                }
-            });
+            recorder = new WebAudioRecorder(source, { workerDir: '/static/js/' });
             recorder.startRecording();
             stopButton.disabled = false;
             recordButton.disabled = true;
@@ -30,16 +21,18 @@ stopButton.addEventListener('click', () => {
     stopButton.disabled = true;
     recordButton.disabled = false;
 
-    const formData = new FormData();
-    formData.append('audio_data', recorder.getWavBlob());
+    recorder.exportWAV(blob => {
+        const formData = new FormData();
+        formData.append('audio_data', blob);
 
-    fetch('/process_audio', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.text())
-        .then(result => {
-            output.innerHTML = `Processed output: ${result}`;
-        });
+        fetch('/process_audio', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                output.innerHTML = `Processed output: ${result}`;
+            });
+    });
 });
 
