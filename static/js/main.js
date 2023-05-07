@@ -19,7 +19,7 @@ recordButton.addEventListener('click', () => {
                 })
                     .then(response => response.text())
                     .then(result => {
-                        output.innerHTML = `Processed output: ${result}`;
+                        output.innerHTML = `${result}`;
                     });
                 recorder.finishRecording();
                 stopButton.disabled = true;
