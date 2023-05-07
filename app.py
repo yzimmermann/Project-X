@@ -27,12 +27,10 @@ def process_audio():
     print(f"Detected language: {max(probs, key=probs.get)}")
 
     # decode the audio
-    options = whisper.DecodingOptions()
-    result = whisper.decode(model, mel, options)
-    print(f"Detected language: {max(probs, key=probs.get)}")
-
-    # decode the audio
-    options = whisper.DecodingOptions()
+    if whisper.cuda.is_available():
+        options = whisper.DecodingOptions(fp16=True)
+    else:
+        options = whisper.DecodingOptions(fp16=False)
     result = whisper.decode(model, mel, options)
     os.remove(filename)
     return result
