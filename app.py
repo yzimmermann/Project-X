@@ -28,7 +28,7 @@ def process_audio():
     print(f"Detected language: {max(probs, key=probs.get)}")
 
     # decode the audio
-    fp16 = !torch.cuda.is_available()  # Use FP16 if running on CPU
+    fp16 = torch.cuda.is_available()  # Use FP16 if running on GPU
     options = whisper.DecodingOptions(fp16=fp16)
     result = whisper.decode(model, mel, options)
     os.remove(filename)
