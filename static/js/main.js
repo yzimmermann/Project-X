@@ -17,20 +17,21 @@ recordButton.addEventListener('click', () => {
 });
 
 stopButton.addEventListener('click', () => {
-    recorder.finishRecording();
-    stopButton.disabled = true;
-    recordButton.disabled = false;
+    recorder.finishRecording(() => {
+        stopButton.disabled = true;
+        recordButton.disabled = false;
 
-    const formData = new FormData();
-    formData.append('audio_data', recorder.getWavBlob());
+        const formData = new FormData();
+        formData.append('audio_data', recorder.getWavBlob());
 
-    fetch('/process_audio', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => response.text())
-        .then(result => {
-            output.innerHTML = `Processed output: \${result}`;
-        });
+        fetch('/process_audio', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                output.innerHTML = `Processed output: ${result}`;
+            });
+    });
 });
 
