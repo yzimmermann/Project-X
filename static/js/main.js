@@ -17,11 +17,11 @@ recordButton.addEventListener('click', () => {
 });
 
 stopButton.addEventListener('click', () => {
-    recorder.finishRecording();
-    stopButton.disabled = true;
-    recordButton.disabled = false;
+    recorder.finishRecording(() => {
+        const encoder = new WavAudioEncoder();
+        encoder.encode([recorder.getBuffer()], recorder.bufferLength);
+        const blob = encoder.finish("audio/wav");
 
-    recorder.exportWAV(blob => {
         const formData = new FormData();
         formData.append('audio_data', blob);
 
@@ -33,6 +33,10 @@ stopButton.addEventListener('click', () => {
             .then(result => {
                 output.innerHTML = `Processed output: ${result}`;
             });
+        
+        stopButton.disabled = true;
+        recordButton.disabled = false;
     });
 });
+
 
