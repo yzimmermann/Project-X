@@ -10,6 +10,21 @@ recordButton.addEventListener('click', () => {
             const audioContext = new AudioContext();
             const source = audioContext.createMediaStreamSource(stream);
             recorder = new WebAudioRecorder(source, { workerDir: '/static/js/' });
+            recorder.onComplete = (recorder, blob) => {
+                const formData = new FormData();
+                formData.append('audio_data', blob);
+                fetch('/process_audio', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.text())
+                    .then(result => {
+                        output.innerHTML = `Processed output: ${result}`;
+                    });
+                recorder.finishRecording();
+                stopButton.disabled = true;
+                recordButton.disabled = false;
+            };
             recorder.startRecording();
             stopButton.disabled = false;
             recordButton.disabled = true;
@@ -17,26 +32,7 @@ recordButton.addEventListener('click', () => {
 });
 
 stopButton.addEventListener('click', () => {
-    recorder.finishRecording(() => {
-        const encoder = new WavAudioEncoder();
-        encoder.encode([recorder.getBuffer()], recorder.bufferLength);
-        const blob = encoder.finish("audio/wav");
-
-        const formData = new FormData();
-        formData.append('audio_data', blob);
-
-        fetch('/process_audio', {
-            method: 'POST',
-            body: formData
-        })
-            .then(response => response.text())
-            .then(result => {
-                output.innerHTML = `Processed output: ${result}`;
-            });
-        
-        stopButton.disabled = true;
-        recordButton.disabled = false;
-    });
+    recorder.finishRecording();
 });
 
 
