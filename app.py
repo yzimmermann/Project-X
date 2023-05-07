@@ -32,7 +32,7 @@ def process_audio():
     options = whisper.DecodingOptions(fp16=fp16)
     result = whisper.decode(model, mel, options)
     os.remove(filename)
-    return result
+    return result.text
 
 if __name__ == '__main__':
     app.run(ssl_context='adhoc', host='0.0.0.0', port=7000)
