@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import whisper
 import os
 from werkzeug.utils import secure_filename
+import torch
 
 app = Flask(__name__)
 model = whisper.load_model("base")
@@ -27,10 +28,8 @@ def process_audio():
     print(f"Detected language: {max(probs, key=probs.get)}")
 
     # decode the audio
-    if whisper.cuda.is_available():
-        options = whisper.DecodingOptions(fp16=True)
-    else:
-        options = whisper.DecodingOptions(fp16=False)
+    fp16 = !torch.cuda.is_available()  # Use FP16 if running on CPU
+    options = whisper.DecodingOptions(fp16=fp16)
     result = whisper.decode(model, mel, options)
     os.remove(filename)
     return result
