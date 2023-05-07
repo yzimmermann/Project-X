@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 import whisper
 import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 model = whisper.load_model("base")
